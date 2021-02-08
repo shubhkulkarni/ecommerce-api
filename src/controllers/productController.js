@@ -6,7 +6,7 @@ exports.getAllProducts = async (req, res) => {
     const products = await Product.find({});
     res.status(200).send({ status: 200, data: products || [] });
   } catch (err) {
-    res.status(500).send(`${err} error occured`);
+    res.status(500).send({ status: 500, message: `${err} error occured` });
   }
 };
 
@@ -17,7 +17,7 @@ exports.addProduct = async (req, res) => {
     const newProduct = await Product.create(reqBody);
     res.status(201).send({ status: 201, data: newProduct });
   } catch (err) {
-    res.status(500).send(`${err} error occured`);
+    res.status(500).send({ status: 500, message: `${err} error occured` });
   }
 };
 
@@ -31,7 +31,7 @@ exports.getProduct = async (req, res) => {
       res.status(200).send({ status: 200, data: [product] });
     }
   } catch (err) {
-    res.status(500).send(`${err} error occured`);
+    res.status(500).send({ status: 500, message: `${err} error occured` });
   }
 };
 
@@ -42,7 +42,7 @@ exports.deleteProduct = async (req, res) => {
       .status(204)
       .send({ status: 204, message: "product deleted successfully" });
   } catch (err) {
-    res.status(500).send(`${err} error occured`);
+    res.status(500).send({ status: 500, message: `${err} error occured` });
   }
 };
 
@@ -52,10 +52,13 @@ exports.updateProduct = async (req, res) => {
     if (!product) {
       res.status(404).send({ status: 404, message: "Invalid id" });
     }
-    await Product.findByIdAndUpdate(req.params.id, req.body);
+    await Product.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+      runValidators: true,
+    });
     const updatedProduct = await Product.findOne({ _id: req.params.id });
     res.status(200).send({ status: 200, data: [updatedProduct] });
   } catch (err) {
-    res.status(500).send(`${err} error occured`);
+    res.status(500).send({ status: 500, message: `${err} error occured` });
   }
 };

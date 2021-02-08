@@ -6,6 +6,7 @@ const productSchema = new mongoose.Schema(
       type: String,
       required: [true, "name is required"],
       unique: true,
+      minLength: 2,
     },
     category: {
       type: String,
@@ -15,14 +16,17 @@ const productSchema = new mongoose.Schema(
     price: {
       type: Number,
       required: [true, "price is required"],
+      min: 0,
     },
     rating: {
       type: Number,
+      max: 5,
+      min: 0,
     },
     brand: {
       type: String,
     },
-    stock: { type: Number, required: [true, "stock is required"] },
+    stock: { type: Number, required: [true, "stock is required"], min: 0 },
     colors: {
       type: [String],
       enum: ["red", "yellow", "black", "white"],
