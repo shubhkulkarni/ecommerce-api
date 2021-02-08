@@ -6,3 +6,8 @@ exports.checkProduct = async (req, res, next) => {
   }
   next();
 };
+
+exports.cheapProducts = (req, res, next) => {
+  req.query.price = { lte: 1000 };
+  next();
+};

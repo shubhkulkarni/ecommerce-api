@@ -9,7 +9,9 @@ require("./database");
 app.use("/api/products", productRouter);
 
 app.all("*", (req, res) => {
-  res.status(404).json({ status: 404, message: "invalid url!" });
+  res
+    .status(404)
+    .json({ status: 404, message: "invalid url : " + req.originalUrl });
 });
 app.listen(process.env.PORT, () =>
   console.log(`Server is running on ${process.env.PORT}`)

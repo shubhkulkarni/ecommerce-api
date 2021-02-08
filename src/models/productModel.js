@@ -26,7 +26,12 @@ const productSchema = new mongoose.Schema(
     brand: {
       type: String,
     },
-    stock: { type: Number, required: [true, "stock is required"], min: 0 },
+    stock: {
+      type: Number,
+      required: [true, "stock is required"],
+      min: 0,
+      select: false,
+    },
     colors: {
       type: [String],
       enum: ["red", "yellow", "black", "white"],

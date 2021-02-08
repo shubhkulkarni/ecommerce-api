@@ -3,7 +3,46 @@ const Product = require("../models/productModel");
 
 exports.getAllProducts = async (req, res) => {
   try {
-    const products = await Product.find({});
+    let queryObj = { ...req.query };
+    console.log(req.query);
+    let excludeFields = ["page", "limit", "sort", "fields"];
+    excludeFields.forEach((i) => delete queryObj[i]);
+
+    //1.filtering
+    let queryStr = JSON.stringify(queryObj);
+    queryStr = queryStr.replace(/\b(gt|gte|lt|lte)\b/g, (match) => `$${match}`);
+
+    //build query
+    let query = Product.find(JSON.parse(queryStr));
+
+    //2.Sorting
+    if (req.query.sort) {
+      let sortBy = req.query.sort.split(",").join(" ");
+      query = query.sort(req.query.sortBy); //query.sort('field1 field2') sorting sequence if field1 has tie
+    }
+
+    //3.field limiting
+    if (req.query.limit) {
+      let limit = req.query.limit.split(",").join(" ");
+      query = query.select(limit);
+    } else {
+      query = query.select("-__v");
+    }
+
+    //4.Pagination
+    const page = req.query.page * 1 || 1;
+    const limit = req.query.limit * 100 || 100;
+    const skip = (page - 1) * limit;
+
+    query = query.skip(skip).limit(limit);
+
+    if (req.query.page) {
+      let prods = await Product.countDocuments();
+      if (skip >= prods) throw new Error("Page does not exist");
+    }
+    //execute query
+    const products = await query;
+
     res.status(200).send({ status: 200, data: products || [] });
   } catch (err) {
     res.status(500).send({ status: 500, message: `${err} error occured` });

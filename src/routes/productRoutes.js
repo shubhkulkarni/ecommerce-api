@@ -6,7 +6,7 @@ const {
   deleteProduct,
   updateProduct,
 } = require("../controllers/productController");
-const { checkProduct } = require("../middlewares/product");
+const { checkProduct, cheapProducts } = require("../middlewares/product");
 
 const productRouter = express.Router();
 
@@ -22,5 +22,7 @@ productRouter
   .get(getProduct)
   .delete(deleteProduct)
   .patch(updateProduct);
+
+productRouter.route("/alias/cheapProducts").get(cheapProducts, getAllProducts);
 
 module.exports = productRouter;
