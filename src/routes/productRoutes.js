@@ -6,10 +6,16 @@ const {
   deleteProduct,
   updateProduct,
 } = require("../controllers/productController");
+const { checkProduct } = require("../middlewares/product");
 
 const productRouter = express.Router();
 
-productRouter.route("/").get(getAllProducts).post(addProduct);
+productRouter.param("id", (req, res, next, val) => {
+  console.log("Testing param middleware");
+  next();
+});
+
+productRouter.route("/").get(getAllProducts).post(checkProduct, addProduct);
 
 productRouter
   .route("/:id")
