@@ -16,6 +16,22 @@ app.all("*", (req, res, next) => {
 
 app.use(errMiddleware);
 
-app.listen(process.env.PORT, () =>
+const server = app.listen(process.env.PORT, () =>
   console.log(`Server is running on ${process.env.PORT}`)
 );
+
+process.on("unhandledRejection", (err) => {
+  console.log(err.name, err.message);
+  console.log("Unhandled Rejection");
+  server.close(() => {
+    process.exit(1);
+  });
+});
+
+process.on("uncaughtException", (err) => {
+  console.log(err.name, err.message);
+  console.log("Uncaught exception...shutting down");
+  server.close(() => {
+    process.exit(1);
+  });
+});

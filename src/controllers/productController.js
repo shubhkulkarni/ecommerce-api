@@ -1,7 +1,8 @@
 const Product = require("../models/productModel");
 const catchAsync = require("../utils/asyncErrorCatcher");
+const AppError = require("../utils/Error");
 
-exports.getAllProducts = catchAsync(async (req, res) => {
+exports.getAllProducts = catchAsync(async (req, res, next) => {
   let queryObj = { ...req.query };
   console.log(req.query);
   let excludeFields = ["page", "limit", "sort", "fields"];
@@ -45,7 +46,7 @@ exports.getAllProducts = catchAsync(async (req, res) => {
   res.status(200).send({ status: 200, data: products || [] });
 });
 
-exports.addProduct = catchAsync(async (req, res) => {
+exports.addProduct = catchAsync(async (req, res, next) => {
   const reqBody = req.body;
 
   const newProduct = await Product.create(reqBody);
@@ -54,32 +55,34 @@ exports.addProduct = catchAsync(async (req, res) => {
   res.status(500).send({ status: 500, message: `${err} error occured` });
 });
 
-exports.getProduct = catchAsync(async (req, res) => {
+exports.getProduct = catchAsync(async (req, res, next) => {
   let id = req.params.id;
   let product = await Product.findOne({ _id: id });
   if (!product) {
-    res.status(404).send({ status: 404, message: "invalid id" });
+    return next(new AppError("Product not found", 404));
   } else {
     res.status(200).send({ status: 200, data: [product] });
   }
 });
 
-exports.deleteProduct = catchAsync(async (req, res) => {
-  await Product.findByIdAndDelete(req.params.id);
+exports.deleteProduct = catchAsync(async (req, res, next) => {
+  let product = await Product.findByIdAndDelete(req.params.id);
+  if (!product) {
+    return next(new AppError("Product not found", 404));
+  }
   res
     .status(204)
     .send({ status: 204, message: "product deleted successfully" });
 });
 
-exports.updateProduct = catchAsync(async (req, res) => {
-  let product = await Product.findOne({ _id: req.params.id });
-  if (!product) {
-    res.status(404).send({ status: 404, message: "Invalid id" });
-  }
-  await Product.findByIdAndUpdate(req.params.id, req.body, {
+exports.updateProduct = catchAsync(async (req, res, next) => {
+  let product = await Product.findByIdAndUpdate(req.params.id, req.body, {
     new: true,
     runValidators: true,
   });
+  if (!product) {
+    return next(new AppError("Product not found", 404));
+  }
   const updatedProduct = await Product.findOne({ _id: req.params.id });
   res.status(200).send({ status: 200, data: [updatedProduct] });
 
