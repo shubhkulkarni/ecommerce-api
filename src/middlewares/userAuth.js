@@ -18,11 +18,12 @@ exports.protect = catchAsync(async (req, res, next) => {
   const tokenValidn = await new Promise((resolve, reject) =>
     resolve(jwt.verify(token, process.env.JWT_SECRET_KEY))
   );
-
-  if (!tokenValidn || !(await User.findById(tokenValidn.id))) {
+  const foundUser = await User.findById(tokenValidn.id);
+  if (!tokenValidn || !foundUser) {
     return next(new AppError("Invalid token. Unauthorized.", 401));
   }
 
+  req.user = foundUser;
   next();
 });
 
@@ -33,4 +34,20 @@ exports.checkLoginRequest = async (req, res, next) => {
       .send({ status: 400, message: "Bad request ! data is inappropriate" });
   }
   next();
+};
+
+exports.authorizeTo = (...roles) => {
+  return (req, res, next) => {
+    console.log(req.user.role);
+    if (!roles.includes(req.user.role)) {
+      return next(
+        new AppError(
+          "Access denied . You don't have permissions to perform this action",
+          403
+        )
+      );
+    }
+
+    next();
+  };
 };

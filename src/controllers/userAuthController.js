@@ -7,16 +7,20 @@ const AppError = require("../utils/Error");
 const bcrypt = require("bcrypt");
 
 exports.signup = catchAsync(async (req, res, next) => {
-  const { name, email, password, confirmPassword } = req.body;
-  const newUser = await User.create({ name, email, password, confirmPassword });
+  const { name, email, password, confirmPassword, role } = req.body;
+  const newUser = await User.create({
+    name,
+    email,
+    password,
+    confirmPassword,
+    role,
+  });
   const token = getAccessToken({ id: newUser._id });
-  res
-    .status(201)
-    .send({
-      status: "success",
-      accessToken: token,
-      data: { id: newUser._id, name: newUser.name, email: newUser.email },
-    });
+  res.status(201).send({
+    status: "success",
+    accessToken: token,
+    data: { id: newUser._id, name: newUser.name, email: newUser.email },
+  });
 });
 
 exports.login = catchAsync(async (req, res, next) => {

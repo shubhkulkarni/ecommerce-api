@@ -30,6 +30,11 @@ const userSchema = new Schema({
       message: "passwords don't match",
     },
   },
+  role: {
+    type: String,
+    enum: ["user", "admin", "seller"],
+    default: "user",
+  },
 });
 
 userSchema.pre("save", async function (next) {

@@ -7,7 +7,7 @@ const {
   updateProduct,
 } = require("../controllers/productController");
 const { checkProduct, cheapProducts } = require("../middlewares/product");
-const { protect } = require("../middlewares/userAuth");
+const { protect, authorizeTo } = require("../middlewares/userAuth");
 
 const productRouter = express.Router();
 
@@ -19,13 +19,13 @@ productRouter.param("id", (req, res, next, val) => {
 productRouter
   .route("/")
   .get(protect, getAllProducts)
-  .post(checkProduct, protect, addProduct);
+  .post(checkProduct, protect, authorizeTo("admin", "seller"), addProduct);
 
 productRouter
   .route("/:id")
   .get(protect, getProduct)
-  .delete(protect, deleteProduct)
-  .patch(protect, updateProduct);
+  .delete(protect, authorizeTo("admin"), deleteProduct)
+  .patch(protect, authorizeTo("admin", "seller"), updateProduct);
 
 productRouter
   .route("/alias/cheapProducts")
