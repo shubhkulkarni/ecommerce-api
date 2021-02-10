@@ -1,6 +1,8 @@
 const { Schema, model } = require("mongoose");
 const validator = require("validator");
 const bcrypt = require("bcrypt");
+const crypto = require("crypto");
+
 const userSchema = new Schema({
   name: { type: String, required: [true, "name is required"], minLength: 2 },
   email: {
@@ -35,6 +37,8 @@ const userSchema = new Schema({
     enum: ["user", "admin", "seller"],
     default: "user",
   },
+  passwordResetToken: String,
+  passwordResetExpires: Date,
 });
 
 userSchema.pre("save", async function (next) {
@@ -46,6 +50,19 @@ userSchema.pre("save", async function (next) {
 
 userSchema.methods.matchPasswords = async function (requestPW, userPW) {
   return await bcrypt.compare(requestPW, userPW);
+};
+
+userSchema.methods.createResetToken = function (next) {
+  const resetToken = crypto.randomBytes(32).toString("hex");
+
+  this.passwordResetToken = crypto
+    .createHash("sha256")
+    .update(resetToken)
+    .digest("hex");
+
+  this.passwordResetExpires = Date.now() + 10 * 60 * 1000;
+
+  return resetToken;
 };
 
 const User = model("User", userSchema);

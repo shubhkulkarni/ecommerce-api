@@ -41,3 +41,14 @@ exports.login = catchAsync(async (req, res, next) => {
     data: { name: user.name, email: user.email },
   });
 });
+
+exports.forgotPassword = catchAsync(async (req, res, next) => {
+  const user = await User.findOne({ email: req.body.email });
+  if (!user) {
+    return next(new AppError("User not found", 404));
+  }
+
+  const resetToken = user.createResetToken();
+
+  await user.save({ validateBeforeSave: false });
+});
