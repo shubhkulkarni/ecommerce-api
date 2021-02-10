@@ -3,12 +3,13 @@ const dotenv = require("dotenv");
 const productRouter = require("./src/routes/productRoutes");
 const AppError = require("./src/utils/Error");
 const { errMiddleware } = require("./src/middlewares/error");
+const { appRouter } = require("./src/routes/route.config");
 const app = express();
 dotenv.config({ path: "./config.env" });
 app.use(express.json());
 require("./database");
 
-app.use("/api/products", productRouter);
+appRouter.forEach((i) => app.use(i.path, i.router));
 
 app.all("*", (req, res, next) => {
   next(new AppError("invalid url : " + req.originalUrl, 404));

@@ -18,7 +18,7 @@ exports.getAllProducts = catchAsync(async (req, res, next) => {
   //2.Sorting
   if (req.query.sort) {
     let sortBy = req.query.sort.split(",").join(" ");
-    query = query.sort(req.query.sortBy); //query.sort('field1 field2') sorting sequence if field1 has tie
+    query = query.sort(sortBy); //query.sort('field1 field2') sorting sequence if field1 has tie
   }
 
   //3.field limiting
