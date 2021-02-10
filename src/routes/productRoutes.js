@@ -7,6 +7,7 @@ const {
   updateProduct,
 } = require("../controllers/productController");
 const { checkProduct, cheapProducts } = require("../middlewares/product");
+const { protect } = require("../middlewares/userAuth");
 
 const productRouter = express.Router();
 
@@ -15,14 +16,19 @@ productRouter.param("id", (req, res, next, val) => {
   next();
 });
 
-productRouter.route("/").get(getAllProducts).post(checkProduct, addProduct);
+productRouter
+  .route("/")
+  .get(protect, getAllProducts)
+  .post(checkProduct, protect, addProduct);
 
 productRouter
   .route("/:id")
-  .get(getProduct)
-  .delete(deleteProduct)
-  .patch(updateProduct);
+  .get(protect, getProduct)
+  .delete(protect, deleteProduct)
+  .patch(protect, updateProduct);
 
-productRouter.route("/alias/cheapProducts").get(cheapProducts, getAllProducts);
+productRouter
+  .route("/alias/cheapProducts")
+  .get(protect, cheapProducts, getAllProducts);
 
 module.exports = productRouter;

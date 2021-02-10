@@ -12,7 +12,11 @@ exports.signup = catchAsync(async (req, res, next) => {
   const token = getAccessToken({ id: newUser._id });
   res
     .status(201)
-    .send({ status: "success", accessToken: token, data: newUser });
+    .send({
+      status: "success",
+      accessToken: token,
+      data: { id: newUser._id, name: newUser.name, email: newUser.email },
+    });
 });
 
 exports.login = catchAsync(async (req, res, next) => {
