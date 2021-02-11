@@ -18,6 +18,13 @@ exports.signup = catchAsync(async (req, res, next) => {
     role,
   });
   const token = getAccessToken({ id: newUser._id });
+  res.cookie("jwt", token, {
+    expires: new Date(
+      Date.now() + process.env.COOKIE_EXPIRES * 24 * 60 * 60 * 1000
+    ),
+    //secure: true, only in production
+    httpOnly: true,
+  });
   res.status(201).send({
     status: "success",
     accessToken: token,
@@ -36,7 +43,13 @@ exports.login = catchAsync(async (req, res, next) => {
   //   let reqHash = bcrypt.compare(user.password, password);
 
   const token = getAccessToken({ id: user._id });
-
+  res.cookie("jwt", token, {
+    expires: new Date(
+      Date.now() + process.env.COOKIE_EXPIRES * 24 * 60 * 60 * 1000
+    ),
+    //secure: true, only in production
+    httpOnly: true,
+  });
   res.status(200).send({
     status: "success",
     accessToken: token,

@@ -4,11 +4,28 @@ const productRouter = require("./src/routes/productRoutes");
 const AppError = require("./src/utils/Error");
 const { errMiddleware } = require("./src/middlewares/error");
 const { appRouter } = require("./src/routes/route.config");
+const rateLimit = require("express-rate-limit");
+const helmet = require("helmet");
+const mongoSanitize = require("express-mongo-sanitize");
+const xss = require("xss-clean");
 const app = express();
 dotenv.config({ path: "./config.env" });
 app.use(express.json());
 require("./database");
 
+const limiter = rateLimit({
+  max: 100,
+  windowMs: 60 * 60 * 1000,
+  message: "Too many requests from this IP. Please try after one hour.", // this limits requests from same ip
+});
+
+app.use(helmet()); //this adds security response headers
+app.use(mongoSanitize()); //sanitizes queries in request data (NoSQL query injection)
+app.use(xss()); //preventing xss attacks (malicious html code)
+
+//use hpp package for preventing parameter pollution
+
+app.use("/api", limiter);
 appRouter.forEach((i) => app.use(i.path, i.router));
 
 app.all("*", (req, res, next) => {
