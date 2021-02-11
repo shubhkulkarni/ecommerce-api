@@ -37,6 +37,11 @@ const userSchema = new Schema({
     enum: ["user", "admin", "seller"],
     default: "user",
   },
+  accountStatus: {
+    type: String,
+    enum: ["active", "inactive"],
+    default: "active",
+  },
   passwordResetToken: String,
   passwordResetExpires: Date,
 });
