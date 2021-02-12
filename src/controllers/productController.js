@@ -2,6 +2,7 @@ const Product = require("../models/productModel");
 const catchAsync = require("../utils/asyncErrorCatcher");
 const AppError = require("../utils/Error");
 const User = require("../models/userModel");
+
 exports.getAllProducts = catchAsync(async (req, res, next) => {
   let queryObj = { ...req.query };
   console.log(req.query);
@@ -103,4 +104,22 @@ exports.addToCart = catchAsync(async (req, res, next) => {
   await user.save({ validateBeforeSave: false });
 
   res.status(200).send({ status: "success", message: "product added to cart" });
+});
+
+exports.removeFromCart = catchAsync(async (req, res, next) => {
+  const { id } = req.params;
+  const { _id: userId } = req.user;
+  if (!id) {
+    return next(new AppError("Invalid product id. Please try again.", 400));
+  }
+
+  const user1 = await User.update(
+    //to update and delete cartItem
+    { _id: userId },
+    { $pull: { cartItems: id } }
+  );
+
+  res
+    .status(200)
+    .send({ status: "success", message: "product removed from cart" });
 });

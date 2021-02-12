@@ -42,7 +42,7 @@ const userSchema = new Schema({
     enum: ["active", "inactive"],
     default: "active",
   },
-  cartItems: [{ type: Schema.ObjectId, ref: "Product", default: [] }],
+  cartItems: [{ type: Schema.ObjectId, ref: "Product" }],
   passwordResetToken: String,
   passwordResetExpires: Date,
 });
