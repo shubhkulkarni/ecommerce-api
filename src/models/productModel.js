@@ -37,9 +37,12 @@ const productSchema = new mongoose.Schema(
       enum: ["red", "yellow", "black", "white"],
     },
   },
-  { timestamps: true }
+  { timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true } }
 );
 
+productSchema.virtual("discount").get(function () {
+  return this.price * 0.1;
+});
 const Product = mongoose.model("Product", productSchema);
 
 module.exports = Product;
