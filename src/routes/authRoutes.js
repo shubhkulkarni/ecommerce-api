@@ -6,6 +6,7 @@ const {
   resetPassword,
   updatePassword,
   deactivateUser,
+  getAllUsers,
 } = require("../controllers/userAuthController");
 
 const {
@@ -26,6 +27,9 @@ authRouter.route("/reset-password/:token").patch(resetPassword);
 
 authRouter.route("/update-password").post(protect, updatePassword);
 
+authRouter
+  .route("/get-all-users")
+  .get(protect, authorizeTo("admin"), getAllUsers);
 authRouter
   .route("/deactivate-user/:id")
   .get(protect, authorizeTo("admin"), deactivateUser);

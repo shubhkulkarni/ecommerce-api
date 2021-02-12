@@ -5,6 +5,7 @@ const {
   getProduct,
   deleteProduct,
   updateProduct,
+  addToCart,
 } = require("../controllers/productController");
 const { checkProduct, cheapProducts } = require("../middlewares/product");
 const { protect, authorizeTo } = require("../middlewares/userAuth");
@@ -30,5 +31,7 @@ productRouter
 productRouter
   .route("/alias/cheapProducts")
   .get(protect, cheapProducts, getAllProducts);
+
+productRouter.route("/cart/:id").get(protect, addToCart);
 
 module.exports = productRouter;

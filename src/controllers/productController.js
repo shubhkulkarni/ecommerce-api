@@ -1,7 +1,7 @@
 const Product = require("../models/productModel");
 const catchAsync = require("../utils/asyncErrorCatcher");
 const AppError = require("../utils/Error");
-
+const User = require("../models/userModel");
 exports.getAllProducts = catchAsync(async (req, res, next) => {
   let queryObj = { ...req.query };
   console.log(req.query);
@@ -87,4 +87,20 @@ exports.updateProduct = catchAsync(async (req, res, next) => {
   res.status(200).send({ status: 200, data: [updatedProduct] });
 
   res.status(500).send({ status: 500, message: `${err} error occured` });
+});
+
+exports.addToCart = catchAsync(async (req, res, next) => {
+  const { id } = req.params;
+  const { _id: userId } = req.user;
+  if (!id) {
+    return next(new AppError("Invalid product id. Please try again.", 400));
+  }
+
+  const user = await User.findById(userId);
+
+  user.cartItems = [...user.cartItems, id];
+
+  await user.save({ validateBeforeSave: false });
+
+  res.status(200).send({ status: "success", message: "product added to cart" });
 });

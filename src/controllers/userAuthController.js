@@ -173,3 +173,8 @@ exports.deactivateUser = catchAsync(async (req, res, next) => {
     .send({ status: "success", message: `User deactivated successfully` });
   next();
 });
+
+exports.getAllUsers = catchAsync(async (req, res, next) => {
+  const users = await User.find({}).populate("cartItems");
+  res.status(200).send({ status: "success", data: users });
+});
