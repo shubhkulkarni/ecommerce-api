@@ -2,6 +2,7 @@ const Product = require("../models/productModel");
 const catchAsync = require("../utils/asyncErrorCatcher");
 const AppError = require("../utils/Error");
 const User = require("../models/userModel");
+const { deleteOneItem } = require("../utils/factoryControllers");
 
 exports.getAllProducts = catchAsync(async (req, res, next) => {
   let queryObj = { ...req.query };
@@ -66,15 +67,17 @@ exports.getProduct = catchAsync(async (req, res, next) => {
   }
 });
 
-exports.deleteProduct = catchAsync(async (req, res, next) => {
-  let product = await Product.findByIdAndDelete(req.params.id);
-  if (!product) {
-    return next(new AppError("Product not found", 404));
-  }
-  res
-    .status(204)
-    .send({ status: 204, message: "product deleted successfully" });
-});
+// exports.deleteProduct = catchAsync(async (req, res, next) => {
+//   let product = await Product.findByIdAndDelete(req.params.id);
+//   if (!product) {
+//     return next(new AppError("Product not found", 404));
+//   }
+//   res
+//     .status(204)
+//     .send({ status: 204, message: "product deleted successfully" });
+// });
+
+exports.deleteProduct = deleteOneItem(Product);   // use factory controllers :)
 
 exports.updateProduct = catchAsync(async (req, res, next) => {
   let product = await Product.findByIdAndUpdate(req.params.id, req.body, {

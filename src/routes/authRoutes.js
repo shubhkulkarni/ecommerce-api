@@ -35,3 +35,6 @@ authRouter
   .get(protect, authorizeTo("admin"), deactivateUser);
 
 module.exports = authRouter;
+
+// for merging routers ,  authRouter.use('/:id/task',taskRouter) for nested routing
+//therefore in taksRouter , const taskRouter = express.Router({mergeParams:true}) // to get access to other routers' params
